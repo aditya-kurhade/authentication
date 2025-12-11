@@ -1,5 +1,42 @@
+import React from 'react';
+import axios from 'axios';
+import {useNavigate} from "react-router-dom";
+
+
+
 
 const SigninPage = () => {
+	const navigate = useNavigate();
+    const [userform, setUserform] = React.useState({
+		email: '',
+		password: ''
+	});
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		try{
+			const payload = {
+				username: userform.email,
+				password: userform.password
+			}
+			
+			const response = await axios.post('http://localhost:3000/api/login', payload);
+			console.log('Signin response:', response.data);
+			// Handle successful signin (e.g., redirect or show a success message)
+			if(response.status === 200){
+				setUserform({ email: '', password: '' });
+				navigate('/success');
+
+				// Redirect or show success message
+			}
+
+		}catch(error){
+			console.error('Signin error:', error);
+			// Handle signin error (e.g., show an error message)
+			navigate('/login');
+		}
+	}
+
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 px-4 py-12">
 			<div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg">
@@ -8,7 +45,7 @@ const SigninPage = () => {
 					<p className="text-sm text-gray-600 mt-2">Sign in to your account</p>
 				</div>
 
-				<form className="space-y-5" action="#" method="POST">
+				<form className="space-y-5" onSubmit={handleSubmit}>
 					<div>
 						<label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email</label>
 						<input
@@ -16,6 +53,8 @@ const SigninPage = () => {
 							name="email"
 							type="email"
 							placeholder="you@example.com"
+							value={userform.email}
+							onChange={(e) => setUserform({...userform, email: e.target.value})}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-150"
 						/>
 					</div>
@@ -27,6 +66,8 @@ const SigninPage = () => {
 							name="password"
 							type="password"
 							placeholder="••••••••"
+							value={userform.password}
+							onChange={(e) => setUserform({...userform, password: e.target.value})}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-150"
 						/>
 					</div>

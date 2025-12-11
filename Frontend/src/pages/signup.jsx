@@ -1,4 +1,53 @@
+import React from 'react';
+import axios from 'axios';
+import {useNavigate} from "react-router-dom";
+
+
+
 const SignupPage = () => {
+  const navigate = useNavigate();
+  const [userform, setUserform] = React.useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (userform.password !== userform.confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+
+    try {
+      const payload = {
+        username: userform.email,
+        password: userform.password,
+        fullName: userform.fullName
+      };
+
+      const response = await axios.post('http://localhost:3000/api/register', payload);
+      console.log('Register response:', response.data);
+
+      if (response.status === 201 || response.status === 200) {
+        setUserform({ fullName: '', email: '', password: '', confirmPassword: '' });
+        navigate('/login');
+      } else {
+        console.error('Registration failed:', response.status, response.data);
+      }
+
+
+      // Handle successful registration (e.g., redirect or show a success message)
+    } catch (error) {
+      // Handle registration error (e.g., show an error message)
+      console.error('Registration error:', error);
+    } 
+
+    console.log('Form submitted:', userform);
+
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-2xl">
@@ -7,7 +56,7 @@ const SignupPage = () => {
           <p className="text-gray-600">Sign up to get started</p>
         </div>
 
-        <form className="mt-8 space-y-6" action="#" method="POST">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
             <input
@@ -15,6 +64,8 @@ const SignupPage = () => {
               name="fullName"
               type="text"
               placeholder="John Doe"
+              value={userform.fullName}
+              onChange={(e) => setUserform({...userform, fullName: e.target.value})}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
             />
           </div>
@@ -26,6 +77,8 @@ const SignupPage = () => {
               name="email"
               type="email"
               placeholder="john@example.com"
+              value={userform.email}
+              onChange={(e) => setUserform({...userform, email: e.target.value})}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
             />
           </div>
@@ -37,6 +90,8 @@ const SignupPage = () => {
               name="password"
               type="password"
               placeholder="••••••••"
+              value={userform.password}
+              onChange={(e) => setUserform({...userform, password: e.target.value})}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
             />
           </div>
@@ -48,6 +103,8 @@ const SignupPage = () => {
               name="confirmPassword"
               type="password"
               placeholder="••••••••"
+              value={userform.confirmPassword}
+              onChange={(e) => setUserform({...userform, confirmPassword: e.target.value})}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
             />
           </div>
